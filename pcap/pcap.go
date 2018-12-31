@@ -965,6 +965,14 @@ func (p *InactiveHandle) Error() error {
 	return errors.New(C.GoString(C.pcap_geterr(p.cptr)))
 }
 
+// WritePacketData calls pcap_sendpacket, injecting the given data into the pcap handle.
+func (p *InactiveHandle) WritePacketData(data []byte) (err error) {
+	if -1 == C.pcap_sendpacket(p.cptr, (*C.u_char)(&data[0]), (C.int)(len(data))) {
+		err = p.Error()
+	}
+	return
+}
+
 // Activate activates the handle.  The current InactiveHandle becomes invalid
 // and all future function calls on it will fail.
 func (p *InactiveHandle) Activate() (*Handle, error) {
